@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class ADS1230TimingViolatedExcception(Exception):
     pass
 
@@ -76,3 +77,21 @@ class ADS1230(object):
             logger.error("SCKL pulse width exceeded 20µs. Standby was enabled. Elapsed time: {elapsed}".format(
                 elapsed=high_time))
             raise ADS1230TimingViolatedExcception()
+
+
+class Loadcell:
+
+    def __init__(self, pin_sclk, pin_dout):
+        self.ads1230 = ADS1230(pin_sclk, pin_dout)
+        self.ads1230.calibrate()
+        self.zero_value = 0
+        self.unit_value = 0
+
+    def calibrate_zero(self):
+        self.zero_value = self.ads1230.measure()
+
+    def calibrate_unit(self, fraction=1.0):
+        self.unit_value = (self.ads1230.measure() - self.zero_value) * (1.0 / fraction)
+
+    def measure(self):
+        return (self.ads1230.measure() - self.zero_value) / self.unit_value
