@@ -56,6 +56,11 @@ class ADS1230(object):
             current_bit = GPIO.input(self.pin_dout)
             result = (result << 1) | current_bit
 
+        self._pulse_clk()  # force DOUT high until next data update
+        if not 1 == GPIO.input(self.pin_dout):
+            logger.warning("DOUT should be HIGH after the 21st pull. Assuming invalid data.")
+            return False
+
         if result & 0x80000:  # signing bit
             result = -((result ^ 0xFFFFF) + 1)
 
@@ -85,7 +90,7 @@ class Loadcell:
         self.ads1230 = ADS1230(pin_sclk, pin_dout)
         self.ads1230.calibrate()
         self.zero_value = 0
-        self.unit_value = 0
+        self.unit_value = 1
 
     def calibrate_zero(self):
         self.zero_value = self.ads1230.measure()
