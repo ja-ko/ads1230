@@ -30,7 +30,7 @@ from ads1230 import Loadcell
 sensor = Loadcell(5,6)  # PIN_SCKL, PIN_DOUT
 sensor.calibrate_zero()
 # now place a reference weight on your sensor
-sensor.calibrate_unit(1.0)  # the fraction indicates the ratio of your reference unit and your reference weight
+sensor.calibrate_unit(1.0)  # the fraction indicates the ratio of your reference weight to your reference unit
 # eg if you want to measure kilogram and your reference is 500g you need to use a fraction of 0.5
 
 result = sensor.measure()
